@@ -36,15 +36,3 @@ message:read-receipt - Message read receipt
 
 curl http://localhost:3000/health
 curl http://localhost:3000/info
-
-# Connect to WebSocket
-
-npm install -g wscat
-
-# Connect
-
-wscat -c ws://localhost:3000
-
-# Send messages
-
-{"type": "auth:set-pseudo", "pseudo": "testuser"}
