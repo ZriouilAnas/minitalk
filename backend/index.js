@@ -5,11 +5,15 @@ const sanitizeHtml = require("sanitize-html");
 
 const app = express();
 const server = http.createServer(app);
+
+// Enhanced CORS configuration
 const io = socketIo(server, {
   cors: {
-    origin: "*", // Change this to your frontend URL in production
+    origin: "*",
     methods: ["GET", "POST"],
+    credentials: true,
   },
+  transports: ["websocket", "polling"], // Fallback transports
 });
 
 // Configuration
@@ -91,7 +95,7 @@ const broadcastUserList = () => {
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log(`New connection: ${socket.id}`);
+  console.log(`✅ New connection: ${socket.id}`);
 
   // Request pseudo from new connection
   socket.emit("auth:require-pseudo");
@@ -99,6 +103,11 @@ io.on("connection", (socket) => {
   // Handle user authentication with pseudo
   socket.on("auth:set-pseudo", (pseudoData) => {
     try {
+      if (!pseudoData || !pseudoData.pseudo) {
+        socket.emit("auth:error", "Pseudo is required");
+        return;
+      }
+
       const pseudo = validatePseudo(pseudoData.pseudo);
 
       // Check if pseudo is already taken
@@ -132,8 +141,9 @@ io.on("connection", (socket) => {
       // Broadcast updated user list
       broadcastUserList();
 
-      console.log(`User ${pseudo} (${socket.id}) joined the chat`);
+      console.log(`✅ User ${pseudo} (${socket.id}) joined the chat`);
     } catch (error) {
+      console.error(`❌ Auth error for ${socket.id}:`, error.message);
       socket.emit("auth:error", error.message);
     }
   });
@@ -146,6 +156,10 @@ io.on("connection", (socket) => {
       if (!user) {
         socket.emit("error", "You must set a pseudo before sending messages");
         return;
+      }
+
+      if (!messageData) {
+        throw new Error("Message data is required");
       }
 
       const validatedMessage = validateMessage(
@@ -174,8 +188,11 @@ io.on("connection", (socket) => {
       // Broadcast message to all users
       io.emit("message:new", message);
 
-      console.log(`Message from ${user.pseudo}: ${validatedMessage.content}`);
+      console.log(
+        `💬 Message from ${user.pseudo}: ${validatedMessage.content}`
+      );
     } catch (error) {
+      console.error(`❌ Message error from ${socket.id}:`, error.message);
       socket.emit("error", error.message);
       if (callback) {
         callback({ status: "error", error: error.message });
@@ -206,18 +223,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Handle message read receipts
-  socket.on("message:read", (messageId) => {
-    const user = connectedUsers.get(socket.id);
-    if (user) {
-      socket.broadcast.emit("message:read-receipt", {
-        messageId: messageId,
-        readBy: user.pseudo,
-        timestamp: new Date(),
-      });
-    }
-  });
-
   // Handle disconnection
   socket.on("disconnect", (reason) => {
     const user = connectedUsers.get(socket.id);
@@ -235,14 +240,24 @@ io.on("connection", (socket) => {
       // Broadcast updated user list
       broadcastUserList();
 
-      console.log(`User ${user.pseudo} (${socket.id}) disconnected: ${reason}`);
+      console.log(
+        `❌ User ${user.pseudo} (${socket.id}) disconnected: ${reason}`
+      );
+    } else {
+      console.log(`❌ Connection ${socket.id} disconnected: ${reason}`);
     }
   });
 
   // Handle connection errors
   socket.on("error", (error) => {
-    console.error(`Socket error for ${socket.id}:`, error);
+    console.error(`❌ Socket error for ${socket.id}:`, error);
   });
+});
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
 });
 
 // Health check endpoint
@@ -260,18 +275,78 @@ app.get("/info", (req, res) => {
     maxMessageLength: MAX_MESSAGE_LENGTH,
     messageTypes: MESSAGE_TYPES,
     connectedUsers: connectedUsers.size,
+    serverTime: new Date(),
   });
+});
+
+// Serve a simple test page
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Chat Server</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+            .success { background: #d4edda; color: #155724; }
+            .error { background: #f8d7da; color: #721c24; }
+        </style>
+    </head>
+    <body>
+        <h1>WebSocket Chat Server</h1>
+        <div id="status" class="status">Checking server status...</div>
+        <div>
+            <h3>Endpoints:</h3>
+            <ul>
+                <li><a href="/health">/health</a> - Server health</li>
+                <li><a href="/info">/info</a> - Server information</li>
+            </ul>
+        </div>
+        <script>
+            fetch('/health')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('status').className = 'status success';
+                    document.getElementById('status').innerHTML = 
+                        '✅ Server is running! Connected users: ' + data.connectedUsers;
+                })
+                .catch(err => {
+                    document.getElementById('status').className = 'status error';
+                    document.getElementById('status').innerHTML = 
+                        '❌ Server error: ' + err.message;
+                });
+        </script>
+    </body>
+    </html>
+  `);
 });
 
 const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`WebSocket chat server ready`);
-  console.log(`Max message length: ${MAX_MESSAGE_LENGTH} characters`);
-  console.log(
-    `Available message types: ${Object.values(MESSAGE_TYPES).join(", ")}`
-  );
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`📡 WebSocket chat server ready`);
+  console.log(`📝 Max message length: ${MAX_MESSAGE_LENGTH} characters`);
+  console.log(`🎨 Message types: ${Object.values(MESSAGE_TYPES).join(", ")}`);
+});
+
+// Handle server errors
+server.on("error", (error) => {
+  console.error("❌ Server error:", error);
+  if (error.code === "EADDRINUSE") {
+    console.log(`💡 Port ${PORT} is already in use. Try a different port:`);
+    console.log(`   PORT=3001 npm start`);
+  }
+});
+
+// Graceful shutdown
+process.on("SIGINT", () => {
+  console.log("\n🛑 Shutting down server...");
+  server.close(() => {
+    console.log("✅ Server closed");
+    process.exit(0);
+  });
 });
 
 module.exports = { server, io, connectedUsers };
