@@ -25,7 +25,7 @@ import {
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  standalone: true, // <-- ADD THIS
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   styleUrls: ['./chat.component.css'],
 })

@@ -12,8 +12,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  standalone: true, // <-- ADD THIS
-  imports: [CommonModule, ReactiveFormsModule], // <-- modules it needs
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
