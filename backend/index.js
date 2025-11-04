@@ -95,7 +95,7 @@ const broadcastUserList = () => {
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log(`✅ New connection: ${socket.id}`);
+  console.log(` New connection: ${socket.id}`);
 
   // Request pseudo from new connection
   socket.emit("auth:require-pseudo");
@@ -141,9 +141,9 @@ io.on("connection", (socket) => {
       // Broadcast updated user list
       broadcastUserList();
 
-      console.log(`✅ User ${pseudo} (${socket.id}) joined the chat`);
+      console.log(` User ${pseudo} (${socket.id}) joined the chat`);
     } catch (error) {
-      console.error(`❌ Auth error for ${socket.id}:`, error.message);
+      console.error(` Auth error for ${socket.id}:`, error.message);
       socket.emit("auth:error", error.message);
     }
   });
@@ -192,7 +192,7 @@ io.on("connection", (socket) => {
         `💬 Message from ${user.pseudo}: ${validatedMessage.content}`
       );
     } catch (error) {
-      console.error(`❌ Message error from ${socket.id}:`, error.message);
+      console.error(` Message error from ${socket.id}:`, error.message);
       socket.emit("error", error.message);
       if (callback) {
         callback({ status: "error", error: error.message });
@@ -241,16 +241,16 @@ io.on("connection", (socket) => {
       broadcastUserList();
 
       console.log(
-        `❌ User ${user.pseudo} (${socket.id}) disconnected: ${reason}`
+        ` User ${user.pseudo} (${socket.id}) disconnected: ${reason}`
       );
     } else {
-      console.log(`❌ Connection ${socket.id} disconnected: ${reason}`);
+      console.log(` Connection ${socket.id} disconnected: ${reason}`);
     }
   });
 
   // Handle connection errors
   socket.on("error", (error) => {
-    console.error(`❌ Socket error for ${socket.id}:`, error);
+    console.error(` Socket error for ${socket.id}:`, error);
   });
 });
 
@@ -309,12 +309,12 @@ app.get("/", (req, res) => {
                 .then(data => {
                     document.getElementById('status').className = 'status success';
                     document.getElementById('status').innerHTML = 
-                        '✅ Server is running! Connected users: ' + data.connectedUsers;
+                        ' Server is running! Connected users: ' + data.connectedUsers;
                 })
                 .catch(err => {
                     document.getElementById('status').className = 'status error';
                     document.getElementById('status').innerHTML = 
-                        '❌ Server error: ' + err.message;
+                        ' Server error: ' + err.message;
                 });
         </script>
     </body>
@@ -325,26 +325,26 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`📡 WebSocket chat server ready`);
-  console.log(`📝 Max message length: ${MAX_MESSAGE_LENGTH} characters`);
-  console.log(`🎨 Message types: ${Object.values(MESSAGE_TYPES).join(", ")}`);
+  console.log(` Server running on http://0.0.0.0:${PORT}`);
+  console.log(` WebSocket chat server ready`);
+  console.log(` Max message length: ${MAX_MESSAGE_LENGTH} characters`);
+  console.log(` Message types: ${Object.values(MESSAGE_TYPES).join(", ")}`);
 });
 
 // Handle server errors
 server.on("error", (error) => {
-  console.error("❌ Server error:", error);
+  console.error(" Server error:", error);
   if (error.code === "EADDRINUSE") {
-    console.log(`💡 Port ${PORT} is already in use. Try a different port:`);
+    console.log(` Port ${PORT} is already in use. Try a different port:`);
     console.log(`   PORT=3001 npm start`);
   }
 });
 
 // Graceful shutdown
 process.on("SIGINT", () => {
-  console.log("\n🛑 Shutting down server...");
+  console.log("\n Shutting down server...");
   server.close(() => {
-    console.log("✅ Server closed");
+    console.log(" Server closed");
     process.exit(0);
   });
 });
