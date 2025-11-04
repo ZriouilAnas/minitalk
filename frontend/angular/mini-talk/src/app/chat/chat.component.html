@@ -1,0 +1,102 @@
+<div class="chat-container">
+  <header class="chat-header">
+    <h2>💬 Angular Chat</h2>
+    <div class="user-actions">
+      <span class="welcome-text">Welcome, {{ currentUser }}</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="chat-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>👥 Online Users ({{ users.length }})</h3>
+      <div class="users-list">
+        <div *ngFor="let user of users" class="user-item">
+          <span class="user-status"></span>
+          <span class="user-pseudo">{{ user.pseudo }}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="main-chat">
+      <div #messagesContainer class="messages-container">
+        <div
+          *ngFor="let message of messages"
+          [class]="getMessageClass(message)"
+          [class.system]="message.senderId === 'system'"
+        >
+          <div *ngIf="message.senderId !== 'system'" class="message-header">
+            <strong>{{ message.pseudo }}</strong>
+            <span class="message-type">{{
+              getMessageTypeLabel(message.type)
+            }}</span>
+          </div>
+
+          <div class="message-content">{{ message.content }}</div>
+
+          <div class="message-time">
+            {{ message.timestamp | date : "HH:mm" }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div *ngIf="getTypingIndicatorText()" class="typing-indicator">
+        {{ getTypingIndicatorText() }}
+      </div>
+
+      <!-- Message Input -->
+      <div class="message-input-container">
+        <div class="message-type-selector">
+          <button
+            *ngFor="
+              let type of [
+                messageTypes.NORMAL,
+                messageTypes.IMPORTANT,
+                messageTypes.URGENT
+              ]
+            "
+            [class]="'type-btn ' + type"
+            [class.active]="selectedMessageType === type"
+            (click)="setMessageType(type)"
+          >
+            {{ getMessageTypeLabel(type) }}
+          </button>
+        </div>
+
+        <form
+          [formGroup]="messageForm"
+          (ngSubmit)="sendMessage()"
+          class="input-form"
+        >
+          <div class="input-group">
+            <input
+              type="text"
+              formControlName="message"
+              placeholder="Type your message..."
+              (input)="onInputChange()"
+              (focus)="onInputFocus()"
+              (blur)="onInputBlur()"
+              maxlength="500"
+              class="message-input"
+            />
+
+            <button
+              type="submit"
+              class="send-btn"
+              [disabled]="!messageForm.valid"
+            >
+              Send
+            </button>
+          </div>
+
+          <div class="message-info">
+            <span class="char-count">{{ getCharCount() }}/500</span>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>

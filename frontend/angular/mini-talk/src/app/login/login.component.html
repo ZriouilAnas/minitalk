@@ -1,0 +1,60 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>💬 Angular Chat</h1>
+
+    <div class="server-info">
+      <p>Server: <strong>ws://localhost:3000</strong></p>
+    </div>
+
+    <div class="connection-status">
+      <span class="status-dot" [style.background]="getStatusColor()"></span>
+      <span>{{ getStatusText() }}</span>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <input
+          type="text"
+          formControlName="pseudo"
+          placeholder="Enter your pseudo (2-20 characters)"
+          class="form-input"
+          maxlength="20"
+          [class.error]="
+            loginForm.get('pseudo')?.invalid && loginForm.get('pseudo')?.touched
+          "
+        />
+
+        <div
+          *ngIf="
+            loginForm.get('pseudo')?.invalid && loginForm.get('pseudo')?.touched
+          "
+          class="error-message"
+        >
+          <div *ngIf="loginForm.get('pseudo')?.errors?.['required']">
+            Pseudo is required
+          </div>
+          <div *ngIf="loginForm.get('pseudo')?.errors?.['minlength']">
+            Pseudo must be at least 2 characters
+          </div>
+          <div *ngIf="loginForm.get('pseudo')?.errors?.['maxlength']">
+            Pseudo must be less than 20 characters
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="login-btn"
+        [disabled]="
+          !loginForm.valid || isLoading || connectionStatus !== 'connected'
+        "
+      >
+        {{ isLoading ? "Connecting..." : "Join Chat" }}
+      </button>
+    </form>
+
+    <div *ngIf="errorMessage" class="error-message global-error">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

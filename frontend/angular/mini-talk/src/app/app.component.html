@@ -1,0 +1,75 @@
+<div class="container">
+  <!-- Login Screen -->
+  <div id="loginScreen" class="screen active">
+    <div class="login-container">
+      <h1>💬 WebSocket Chat</h1>
+      <div class="server-info">
+        <p>Connecting to: <span id="serverUrl">ws://localhost:3000</span></p>
+      </div>
+      <form id="loginForm">
+        <input
+          type="text"
+          id="pseudoInput"
+          placeholder="Enter your pseudo (2-20 characters)"
+          maxlength="20"
+          required
+        />
+        <button type="submit">Join Chat</button>
+      </form>
+      <div id="loginError" class="error-message"></div>
+      <div class="connection-status">
+        <span id="statusIndicator" class="status-disconnected">●</span>
+        <span id="statusText">Disconnected</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Screen -->
+  <div id="chatScreen" class="screen">
+    <div class="chat-header">
+      <h2>WebSocket Chat</h2>
+      <div class="user-info">
+        <span>Welcome, <span id="currentUser"></span></span>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h3>👥 Online Users (<span id="userCount">0</span>)</h3>
+        <div id="usersList" class="users-list"></div>
+      </div>
+
+      <!-- Main Chat Area -->
+      <div class="main-chat">
+        <div id="messagesContainer" class="messages-container"></div>
+
+        <div id="typingIndicator" class="typing-indicator"></div>
+
+        <div class="message-input-container">
+          <div class="message-type-selector">
+            <button class="type-btn active" data-type="normal">
+              💬 Normal
+            </button>
+            <button class="type-btn" data-type="important">⚠️ Important</button>
+            <button class="type-btn" data-type="urgent">🚨 Urgent</button>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              id="messageInput"
+              placeholder="Type your message..."
+              maxlength="500"
+              disabled
+            />
+            <button id="sendBtn" disabled>Send</button>
+          </div>
+          <div class="message-info">
+            <span id="charCount">0/500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
