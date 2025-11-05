@@ -41,7 +41,7 @@
             }}</span>
           </div>
 
-          <div class="message-content">{{ message.content }}</div>
+          <div class="message-content">{{ decodeHtmlEntities(message.content) }}</div>
 
           <div class="message-time">
             {{ message.timestamp | date : "HH:mm" }}

@@ -91,7 +91,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           ...msg,
           timestamp: new Date(msg.timestamp)
         }));
-        
+
         // Prepend older messages to the beginning of the array
         this.messages = [...processedMessages, ...this.messages];
         // Keep scroll position relatively stable when adding messages at the top
@@ -228,6 +228,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     return `${typingArray[0]} and ${
       typingArray.length - 1
     } others are typing...`;
+  }
+
+  decodeHtmlEntities(text: string): string {
+    return text
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#x27;/g, "'");
   }
 
   getMessageTypeLabel(type: MessageType): string {

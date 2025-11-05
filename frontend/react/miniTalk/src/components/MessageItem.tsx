@@ -10,6 +10,18 @@ interface MessageItemProps {
 }
 
 export function MessageItem({ message, isOwn, isDelivered = false }: MessageItemProps) {
+  // Function to decode HTML entities (same as Svelte)
+  const decodeHtmlEntities = (text: string): string => {
+    return text
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#x27;/g, "'");
+  };
+  
+  const decodedContent = decodeHtmlEntities(message.content);
+  
   const getMessageTypeIcon = (type: MessageType) => {
     switch (type) {
       case 'important':
@@ -75,7 +87,7 @@ export function MessageItem({ message, isOwn, isDelivered = false }: MessageItem
         `}>
           {/* Message content */}
           <p className="text-sm break-words whitespace-pre-wrap">
-            {message.content}
+            {decodedContent}
           </p>
 
           {/* Message metadata */}

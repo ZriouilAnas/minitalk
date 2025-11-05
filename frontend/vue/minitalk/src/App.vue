@@ -72,7 +72,7 @@
                 }}</span>
               </div>
 
-              <div class="message-content">{{ message.content }}</div>
+              <div class="message-content">{{ decodeHtmlEntities(message.content) }}</div>
 
               <div class="message-time">
                 {{ formatTime(message.timestamp) }}
@@ -129,6 +129,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { io } from "socket.io-client";
+
+// Function to decode HTML entities
+const decodeHtmlEntities = (text) => {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'");
+};
 
 // State
 const socket = ref(null);
