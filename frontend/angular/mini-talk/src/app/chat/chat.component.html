@@ -22,6 +22,13 @@
     <!-- Main Chat Area -->
     <main class="main-chat">
       <div #messagesContainer class="messages-container">
+        <!-- Load More History Button -->
+        <div class="load-more-container" *ngIf="messages.length > 0">
+          <button class="load-more-btn" (click)="loadMoreHistory()">
+            📜 Load older messages
+          </button>
+        </div>
+
         <div
           *ngFor="let message of messages"
           [class]="getMessageClass(message)"

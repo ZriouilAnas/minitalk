@@ -71,6 +71,22 @@ export class ChatService {
     });
   }
 
+  onMessageHistory(): Observable<ChatMessage[]> {
+    return new Observable((observer) => {
+      this.socket.on('message:history', (messages) => observer.next(messages));
+    });
+  }
+
+  onMoreHistory(): Observable<ChatMessage[]> {
+    return new Observable((observer) => {
+      this.socket.on('message:more-history', (messages) => observer.next(messages));
+    });
+  }
+
+  requestMoreHistory(limit: number = 20): void {
+    this.socket.emit('message:request-history', { limit });
+  }
+
   sendMessage(
     content: string,
     type: MessageType

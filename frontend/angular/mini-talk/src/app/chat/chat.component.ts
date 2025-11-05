@@ -71,6 +71,39 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Listen for message history (sent on connection)
+    this.subscriptions.add(
+      this.chatService.onMessageHistory().subscribe((messages) => {
+        console.log('Received message history:', messages.length, 'messages');
+        this.messages = messages.map(msg => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        this.scrollToBottom();
+      })
+    );
+
+    // Listen for more history (on request)
+    this.subscriptions.add(
+      this.chatService.onMoreHistory().subscribe((messages) => {
+        console.log('Received more history:', messages.length, 'messages');
+        const processedMessages = messages.map(msg => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        
+        // Prepend older messages to the beginning of the array
+        this.messages = [...processedMessages, ...this.messages];
+        // Keep scroll position relatively stable when adding messages at the top
+        setTimeout(() => {
+          if (this.messagesContainer) {
+            const container = this.messagesContainer.nativeElement;
+            container.scrollTop = container.scrollHeight - container.clientHeight - 100;
+          }
+        }, 50);
+      })
+    );
+
     // Listen for user updates
     this.subscriptions.add(
       this.chatService.onUsersUpdate().subscribe((users) => {
@@ -228,5 +261,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   getCharCount(): number {
     return this.messageForm.get('message')?.value?.length || 0;
+  }
+
+  loadMoreHistory(): void {
+    this.chatService.requestMoreHistory(20);
   }
 }

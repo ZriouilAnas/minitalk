@@ -293,6 +293,31 @@
   color: #6c757d;
 }
 
+/* Load More Button */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.load-more-btn {
+  padding: 10px 20px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s;
+  opacity: 0.8;
+}
+
+.load-more-btn:hover {
+  background: #5a6268;
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
 /* Scrollbar */
 .messages-container::-webkit-scrollbar {
   width: 6px;
