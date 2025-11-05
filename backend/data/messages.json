@@ -1,0 +1,58 @@
+[
+  {
+    "id": "demo-1",
+    "pseudo": "System",
+    "content": "Bienvenue sur MiniTalk ! Cette application de chat en temps réel supporte les messages avec priorités.",
+    "type": "normal",
+    "timestamp": "2025-11-05T04:07:11.530Z",
+    "senderId": "system"
+  },
+  {
+    "id": "demo-2",
+    "pseudo": "Admin",
+    "content": "N'hésitez pas à tester les différents types de messages : Normal, Important et Urgent !",
+    "type": "important",
+    "timestamp": "2025-11-05T04:12:11.531Z",
+    "senderId": "admin"
+  },
+  {
+    "id": "demo-3",
+    "pseudo": "Bot",
+    "content": "Les messages sont horodatés et vous pouvez voir qui est en train d'écrire 📝",
+    "type": "normal",
+    "timestamp": "2025-11-05T04:15:11.531Z",
+    "senderId": "bot"
+  },
+  {
+    "id": "1762317035523fzuhbikbz",
+    "pseudo": "mm",
+    "content": "jkhklhnn::",
+    "type": "normal",
+    "timestamp": "2025-11-05T04:30:35.524Z",
+    "senderId": "GgUb_hJV84_szg7BAAAP"
+  },
+  {
+    "id": "1762317044353pb86lmyk4",
+    "pseudo": "kkk",
+    "content": "klikjkjkkn;",
+    "type": "urgent",
+    "timestamp": "2025-11-05T04:30:44.353Z",
+    "senderId": "5lwW95TDGTmvaLgyAAAN"
+  },
+  {
+    "id": "1762317125783do1hyir6u",
+    "pseudo": "rr",
+    "content": "kghkkkkkkj;hhhhhhlh",
+    "type": "normal",
+    "timestamp": "2025-11-05T04:32:05.783Z",
+    "senderId": "Bq2H-HAldow1SDBQAAAT"
+  },
+  {
+    "id": "1762317195901dpgs1xq0r",
+    "pseudo": "jgk;",
+    "content": "jhghvjhvjh",
+    "type": "normal",
+    "timestamp": "2025-11-05T04:33:15.901Z",
+    "senderId": "5tWno4qRCPwjh32hAAAb"
+  }
+]
