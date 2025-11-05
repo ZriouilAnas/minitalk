@@ -53,6 +53,13 @@
         <!-- Main Chat -->
         <div class="main-chat">
           <div class="messages" ref="messagesContainer">
+            <!-- Load More History Button -->
+            <div v-if="messages.length > 0" class="load-more-container">
+              <button @click="loadMoreHistory" class="load-more-btn">
+                📜 Load older messages
+              </button>
+            </div>
+
             <div
               v-for="message in messages"
               :key="message.id"
@@ -181,6 +188,34 @@ const connect = () => {
   socket.value.on("message:new", (message) => {
     messages.value.push(message);
     scrollToBottom();
+  });
+
+  // Message history (sent on connection)
+  socket.value.on("message:history", (historyMessages) => {
+    console.log('Received message history:', historyMessages.length, 'messages');
+    messages.value = historyMessages.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp)
+    }));
+    scrollToBottom();
+  });
+
+  // More history (on request)
+  socket.value.on("message:more-history", (historyMessages) => {
+    console.log('Received more history:', historyMessages.length, 'messages');
+    const processedMessages = historyMessages.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp)
+    }));
+    
+    // Prepend older messages to the beginning of the array
+    messages.value = [...processedMessages, ...messages.value];
+    // Keep scroll position relatively stable when adding messages at the top
+    nextTick(() => {
+      if (messagesContainer.value) {
+        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight - messagesContainer.value.clientHeight - 100;
+      }
+    });
   });
 
   // Users
@@ -319,6 +354,10 @@ const scrollToBottom = () => {
       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
     }
   });
+};
+
+const loadMoreHistory = () => {
+  socket.value.emit("message:request-history", { limit: 20 });
 };
 
 // Lifecycle
@@ -679,6 +718,31 @@ body {
   margin-top: 5px;
   font-size: 0.8em;
   color: #6c757d;
+}
+
+/* Load More Button */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.load-more-btn {
+  padding: 10px 20px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s;
+  opacity: 0.8;
+}
+
+.load-more-btn:hover {
+  background: #5a6268;
+  opacity: 1;
+  transform: translateY(-1px);
 }
 
 /* Scrollbar */
